@@ -1,0 +1,139 @@
+.item {
+
+}
+
+.backdrop {
+  background: rgba(61, 61, 61, 0.3);
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100000;
+  display: none;
+  &.active {
+    display: block;
+  }
+}
+
+.refPopup {
+  width: 819px;
+  max-height: 90vh;
+  overflow: auto;
+  position: fixed;
+  left: -500%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  background: #FFFFFF;
+  border-radius: 20px;
+  z-index: 1000000;
+  opacity: 0;
+  padding: 10px 64px 60px 65px;
+  transition: .3s opacity;
+  &.active {
+    left: 50%;
+    opacity: 1;
+  }
+}
+
+.close {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  border: none;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  z-index: 3;
+  transition: .3s all;
+}
+
+.title {
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 29px;
+  color: #000000;
+  margin-bottom: 20px;
+  margin-top: 30px;
+}
+
+.txt {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 140%;
+  color: #000000;
+  margin-bottom: 22.4px;
+}
+
+.subtitle {
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 24px;
+  color: #2A73DE;
+  margin-bottom: 9px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -25px;
+  margin-left: -25px;
+}
+
+.item {
+  width: 35%;
+  margin-top: 31px;
+  padding-left: 25px;
+  padding-right: 25px;
+  &__count {
+    width: 53px;
+    height: 53px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 29px;
+    color: #3D3D3D;
+  }
+  &__txt {
+    margin-top: 20px;
+    margin-bottom: 0;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 20px;
+    color: #000000;
+    max-width: 317px;
+  }
+  &_sm {
+    width: 30%;
+  }
+  &_lg {
+    width: 60.666%;
+  }
+}
+
+@media(max-width: 991px) {
+  .refPopup {
+    width: 90vw;
+    padding: 10px 20px 30px 20px;
+  }
+  .title {
+    font-size: 18px;
+    line-height: 25px;
+  }
+  .txt {
+    font-size: 14px;
+  }
+  .subtitle {
+    font-size: 16px;
+  }
+  .item {
+  width: 50% !important;
+    &__txt {
+      font-size: 12px;
+      margin-top: 10px;
+    }
+  }
+}
