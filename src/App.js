@@ -57,7 +57,6 @@ function App() {
 
 
     const [loginData, setLoginData] = useState({})
-    console.log(userInfo);
     return (
         <>
             <div style={{width: 0, height: 0, overflow: 'hidden'}}><input type="text" /><input type="password" /></div>

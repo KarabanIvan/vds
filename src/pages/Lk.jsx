@@ -16,7 +16,11 @@ const Lk = ({ userInfo }) => {
 
     const [allVps, setAllVps] = useState([])
 
+    const [refInf, setRefInf] = useState()
+
     const [loading, setLoading] = useState(true)
+
+    const [contModal, setContModal] = useState(false)
 
     const [loadingRef, setLoadingRef] = useState(true)
 
@@ -32,6 +36,7 @@ const Lk = ({ userInfo }) => {
     });
 
 
+
     React.useEffect(() => {
         if (userInfo) {
             const headerToken = userInfo.token
@@ -45,6 +50,13 @@ const Lk = ({ userInfo }) => {
             }).then((json) => {
                 setAllVps(json)
             });
+            fetch('https://api.betvds.ru/api/User/GetMyReferals', {
+                headers: myHeaders ,
+            }).then((res) => {
+                return res.json()
+            }).then((json) => {
+                setRefInf(json)
+            });
             setLoading(false)
         } else {
             setLoading(true)
@@ -52,11 +64,8 @@ const Lk = ({ userInfo }) => {
 
     }, [userInfo]);
 
-    const [refInf, setRefInf] = useState()
 
     let updateServersData = [...allVps]
-
-    console.log(updateServersData)
 
     updateServersData.map((item) => {
         item.searchString = item.config.password + item.config.username + item.ipAddress + item.port
@@ -69,12 +78,12 @@ const Lk = ({ userInfo }) => {
             <div className="main_content">
                 <Sidebar />
                 <Routes>
-                    <Route path="/" element={<Home serversData={updateServersData} myHeaders={headerToken} refreshDatas={refreshDatas} loading={loading} />} />
-                    <Route path="/config" element={<Config setPayModal={(state) => setPayModal(state)}/>} />
-                    <Route path="ref" element={<Ref setRefModal={(state) => setRefModal(state)} />} />
+                    <Route path="/" element={<Home serversData={updateServersData} setContModal={(state) => setContModal(state)} myHeaders={headerToken} refreshDatas={refreshDatas} loading={loading} />} />
+                    <Route path="/config" element={<Config setPayModal={(state) => setPayModal(state)}/>} setContModal={(state) => setContModal(state)} />
+                    <Route path="ref" element={<Ref useInfo={userInfo} dataRef={refInf} setRefModal={(state) => setRefModal(state)} />} />
                 </Routes>
             </div>
-            <Popups refModal={refModal} setRefModal={(state) => setRefModal(state)} payModal={payModal} setPayModal={(state) => setPayModal(state)} />
+            <Popups refModal={refModal} setRefModal={(state) => setRefModal(state)} payModal={payModal} setPayModal={(state) => setPayModal(state)} contModal={contModal} setContModal={(state) => setContModal(state)} />
         </>
     );
 };

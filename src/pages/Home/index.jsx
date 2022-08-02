@@ -1,8 +1,9 @@
 import React, {useMemo} from 'react';
 import ServersList from "../../components/ServersList";
 import Empty from "../../components/Empty";
+import {NavLink} from "react-router-dom";
 
-const Index = ({ serversData, loading, myHeaders, refreshDatas }) => {
+const Index = ({ serversData, loading, myHeaders, refreshDatas, setContModal }) => {
 
     const [isServers, setIsServers] = React.useState(true)
     const serversInfo = serversData.length
@@ -13,26 +14,27 @@ const Index = ({ serversData, loading, myHeaders, refreshDatas }) => {
 
     let componentServers;
 
+    const doCheckedVps = () => {
+        let checkedArray = []
+        if (allChecked) {
+            checkedArray = []
+            setAllChecked(false)
+        } else  {
+            serversData.map((item) => {
+                checkedArray.push(item.id)
+            })
+            setAllChecked(true)
+        }
+        setCheckVps(checkedArray)
+    }
+
+
     const searchedData = React.useMemo(() => {
         if (!loading) {
             return [...serversData].filter(item => item.searchString.includes(searchQuery))
         }
         return false
     }, [searchQuery, serversData]);
-
-    const checkingVsp = () => {
-        if (checkVps.length) {
-            let checkedArray = []
-            setCheckVps(checkedArray);
-        } else {
-            let checkedArray = []
-            for (let i = 1; i <= searchedData.length; i++) {
-                checkedArray.push(i)
-            }
-            setCheckVps(checkedArray);
-        }
-    }
-
 
     if (loading) {
         componentServers = <h2 style={{textAlign: 'center'}}>Идет загрузка...</h2>
@@ -43,7 +45,7 @@ const Index = ({ serversData, loading, myHeaders, refreshDatas }) => {
     } else if (searchedData.length === 0) {
         componentServers = <Empty txt='Ничего не найдено'/>
     } else if (!loading && serversData) {
-        componentServers = <ServersList data={searchedData} myHeaders={myHeaders} checkVps={checkVps} setCheckVps={(array) => setCheckVps(array)}  refreshDatas={refreshDatas} allChecked={allChecked} />
+        componentServers = <ServersList data={searchedData} setContModal={setContModal} myHeaders={myHeaders} checkVps={checkVps} setCheckVps={(array) => setCheckVps(array)} setAllChecked={(bool) => setAllChecked(bool)}  refreshDatas={refreshDatas} allChecked={allChecked} />
     }
 
     return (
@@ -58,8 +60,8 @@ const Index = ({ serversData, loading, myHeaders, refreshDatas }) => {
                     </div>
                 </div>
                 <div className="right_potr">
-                    <a href="#" className="btn_b">купить новый</a>
-                    <a href="#" className="btn_w">продлить выбранные</a>
+                    <NavLink to="/config" className="btn_b">купить новый</NavLink>
+                    <button className="btn_w" onClick={() => setContModal(true)}>продлить выбранные</button>
                 </div>
             </div>
 
@@ -83,8 +85,8 @@ const Index = ({ serversData, loading, myHeaders, refreshDatas }) => {
                     <div className="inner_hiden">
                         <div className="big_custom_polt">
                             <div className="coups clearfix">
-                                <label className="containerCH">
-                                    <input type="checkbox" className="selAll" onClick={() => {checkingVsp()}} />
+                                <label className="containerCH" onClick={() => doCheckedVps()}>
+                                    <input type="checkbox" className="selAll" checked={allChecked} disabled  />
                                     <span className="checkmark"></span>
                                 </label>
                                 <div className="os">
@@ -100,7 +102,7 @@ const Index = ({ serversData, loading, myHeaders, refreshDatas }) => {
                                     Статус
                                 </div>
                                 <div className="time_left">
-                                    Истекает через
+                                    Истекает
                                 </div>
                                 <div className="prodlen">
                                     Продление

@@ -1,20 +1,42 @@
 import React from 'react';
 
-const Server = ({ data, index, allChecked, myHeaders, refreshDatas, checkVps, setCheckVps }) => {
+const Server = ({ data, index, allChecked, myHeaders, refreshDatas, setContModal, setAllChecked, checkVps, setCheckVps }) => {
+
+    function timestampToDate(ts) {
+        let d = new Date();
+        d.setTime(ts);
+        return ('0' + d.getDate()).slice(-2) + '.' + ('0' + (d.getMonth() + 1)).slice(-2) + '.' + d.getFullYear();
+    }
 
     const [openAccord, setOpenAccord] = React.useState(false);
 
     const [changePassword, setChangePassword] = React.useState(false);
 
-    const [newPassword, setNewPassword] = React.useState();
+    const [newPassword, setNewPassword] = React.useState('');
 
-    const [repPassword, setRepPassword] = React.useState();
+    const [repPassword, setRepPassword] = React.useState('');
 
     const [changed, setChanged] = React.useState(false)
 
-    const [start, setStart] = React.useState(false);
+    const [start, setStart] = React.useState(() => {
+        if (data.status === 2 || data.status === 3 || data.status === 4) {
+            return true
+        } else if (data.status === 0) {
+            return true
+        } else {
+            return false
+        }
+    });
 
-    const [stop, setStop] = React.useState(false);
+    const [stop, setStop] = React.useState(() => {
+        if (data.status === 2 || data.status === 3 || data.status ===  4) {
+            return true
+        } else if (data.status === 1) {
+            return true
+        } else {
+            return false
+        }
+    });
 
     const statusList = ['Активный', 'Остановлен', 'Создается', 'Добавлен', 'В ожидании'];
     const serverId = data.id;
@@ -23,21 +45,19 @@ const Server = ({ data, index, allChecked, myHeaders, refreshDatas, checkVps, se
     const onClickOpen = () => {
         setOpenAccord(!openAccord);
     }
-    let newCheckVps = checkVps
-    React.useEffect(() => {
-        newCheckVps = checkVps
-    }, [checkVps])
-    const onClickCheckmark = () => {
-        if (newCheckVps.includes(index + 1)) {
-            const indexArray = newCheckVps.indexOf(index + 1)
-            if (indexArray > -1) { // only splice array when item is found
-                newCheckVps.splice(index, 1); // 2nd parameter means remove one item only
+
+    const onChecking = () => {
+        let cloneCheckVps = Array.from(checkVps)
+        if (cloneCheckVps.includes(data.id)) {
+            let needIndex = cloneCheckVps.indexOf(data.id)
+            if (needIndex !== -1) {
+                cloneCheckVps.splice(needIndex, 1);
             }
+            setAllChecked(false)
         } else {
-            newCheckVps.push(index + 1)
+            cloneCheckVps.push(data.id)
         }
-        console.log(newCheckVps)
-        setCheckVps(newCheckVps)
+        setCheckVps(cloneCheckVps)
     }
 
     const setPass = () => {
@@ -46,6 +66,13 @@ const Server = ({ data, index, allChecked, myHeaders, refreshDatas, checkVps, se
             "password": newPassword,
             "isSave": true
         }
+        if (newPassword !== repPassword) {
+            alert('Пароли не совпадают')
+        } else if (newPassword.length <= 4) {
+            alert('Пароль слишком короткий')
+        } else if (!newPassword || !repPassword) {
+            alert('Заполните оба поля')
+        }
         if ((newPassword && repPassword) && (newPassword === repPassword) && (newPassword.length > 4)) {
             fetch('https://api.betvds.ru/api/Vps/SetPassword', {
                 method: 'POST',
@@ -53,6 +80,12 @@ const Server = ({ data, index, allChecked, myHeaders, refreshDatas, checkVps, se
                 headers: {
                     'Authorization': `Bearer ${myHeaders}`,
                     'Content-Type': 'application/json',
+                }
+            }).then((res) => {
+                if (res.ok) {
+                    alert('Пароль успешно изменен')
+                } else {
+                    alert('Ошибка сервера')
                 }
             })
             setChangePassword(false);
@@ -72,6 +105,7 @@ const Server = ({ data, index, allChecked, myHeaders, refreshDatas, checkVps, se
                 }
             }).then(() => {
                 setStart(true)
+                setStop(false)
             })
         }
 
@@ -88,29 +122,49 @@ const Server = ({ data, index, allChecked, myHeaders, refreshDatas, checkVps, se
             }
         }).then(() => {
             setStop(true)
+            setStart(false)
         })
     }
 
-    let accordionClass;
+    const selecting = false
 
-    if (newCheckVps.includes(index + 1) && openAccord) {
-        accordionClass = 'panelAccord opened selected'
-    } else if (checkVps.includes(index + 1)) {
-        accordionClass = 'panelAccord selected'
-    } else if (openAccord) {
-        accordionClass = 'panelAccord opened'
-    } else {
-        accordionClass = 'panelAccord'
+    const accordionClass = () => {
+        const checkBoxId = 'check-' + data.id
+        setTimeout(() => {
+            document.getElementById(checkBoxId).checked = false;
+        }, 100)
+        if (checkVps.includes(data.id) && openAccord) {
+            setTimeout(() => {
+                document.getElementById(checkBoxId).checked = true;
+            }, 100)
+            return  'panelAccord opened selected'
+        } else if (checkVps.includes(data.id)) {
+            setTimeout(() => {
+                document.getElementById(checkBoxId).checked = true;
+            }, 100)
+            return  'panelAccord selected'
+        } else if (openAccord) {
+            setTimeout(() => {
+                document.getElementById(checkBoxId).checked = false;
+            }, 100)
+            return 'panelAccord opened'
+        } else {
+            setTimeout(() => {
+                document.getElementById(checkBoxId).checked = false;
+            }, 100)
+            return  'panelAccord'
+        }
     }
+
 
     return (
         <div className="accordion-item">
-            <div id={'accordion-button-' + index} className={accordionClass}>
+            <div id={'accordion-button-' + index} className={accordionClass()}>
                 <div className="wrap_inCH clearfix">
                     <div className="divCH">
                         <label className="containerCH">
-                            <input type="checkbox" {...(newCheckVps.includes(index + 1) ? 'checked' : '')} className="selSer"/>
-                            <span className="checkmark" onClick={() => onClickCheckmark()}></span>
+                            <input type="checkbox" className="selSer" id={'check-' + data.id}/>
+                            <span className="checkmark" onClick={() => onChecking()}></span>
                         </label>
                     </div>
                     <div className="divCHimg">
@@ -131,12 +185,12 @@ const Server = ({ data, index, allChecked, myHeaders, refreshDatas, checkVps, se
                         <span className="good">{statusList[data.status]}</span>
                     </div>
                     <div className="dateCh">
-                        <span>22дн 5ч 2м</span>
+                        <span>{timestampToDate(data.expirationDate)}</span>
                     </div>
 
                     <div className="btnRespam">
                         <div className="btnCh">
-                            <button className="goMore">Продлить</button>
+                            <button className="goMore" onClick={() => setContModal(true)}>Продлить</button>
                         </div>
                         <button className={ !openAccord ? "icon fopitem" : "icon fopitem rotate"} onClick={() => onClickOpen()} aria-hidden="accordion-button-1">
                             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="9" viewBox="0 0 13 9"
@@ -156,7 +210,7 @@ const Server = ({ data, index, allChecked, myHeaders, refreshDatas, checkVps, se
                 <div className="contCH clearfix">
                     <div className="upravl">
                         <div className="gopom">
-                            <button className="stop" style={stop ? {opacity: 0.4, cursor: 'default'} : {opacity: 1}} onClick={() => stopVps()}>
+                            <button className="stop" disabled={stop ? true : false} style={stop ? {opacity: 0.4, cursor: 'default'} : {opacity: 1}} onClick={() => stopVps()}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="21" viewBox="0 0 20 21"
                                      fill="none">
                                     <rect width="20" height="20.1724" rx="2" fill="#C71519"/>

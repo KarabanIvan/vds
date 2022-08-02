@@ -6,61 +6,11 @@ import Referals from "../../components/Referals";
 const Ref = (props) => {
     const [viewPassword, setViewPassword] = useState(false);
 
-    const [dataRef, setDataRef] = React.useState();
-
     const [loading, setLoading] = React.useState(true);
-
-    const [useInfo, setUseInfo] = useState('');
-
-    const data = { "userName": localStorage.getItem('username'),
-        "password": localStorage.getItem('password'),
-        "hwid": "string"
-    }
-
-    React.useEffect(() => {
-        fetch('https://api.betvds.ru/api/User/login', {
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then((res) => {
-            return res.json();
-        }).then((json) => {
-            setUseInfo(json);
-        });
-    }, [])
-
-    console.log(useInfo)
-
-    // данные для рефералов
-
-    const headerToken = useInfo.token;
-    const myHeaders = new Headers({
-        'Authorization': `Bearer ${useInfo.token}`
-    });
-
-    React.useEffect(() => {
-        if (useInfo) {
-            fetch('https://api.betvds.ru/api/User/GetMyReferals', {
-                headers: myHeaders ,
-            }).then((res) => {
-                return res.json();
-            }).then((json) => {
-                setDataRef(json);
-            });
-            setLoading(false)
-        } else {
-            setLoading(true)
-        }
-    }, [useInfo])
-
-
-    //
-
+    console.log(props.dataRef)
     return (
         <div style={{width: '100%'}}>
-            {useInfo && dataRef ? (
+            {props.dataRef && props.dataRef.success ? (
                 <div className={' i_cont'}>
                     <div className="head_i">
                         <div className="left_potr">
@@ -87,7 +37,7 @@ const Ref = (props) => {
                                 </h4>
                                 <p className={styles.infoContent}>
                                     <p>
-                                        {useInfo.user.userName}
+                                        {props.useInfo.user.userName}
                                     </p>
                                 </p>
                             </div>
@@ -97,7 +47,7 @@ const Ref = (props) => {
                                 </h4>
                                 <p className={styles.infoContent}>
                                     <p>
-                                        {useInfo.user.email}
+                                        {props.useInfo.user.email}
                                     </p>
                                 </p>
                             </div>
@@ -107,7 +57,7 @@ const Ref = (props) => {
                                 </h4>
                                 <p className={styles.infoContent}>
                                     <div className={styles.infoPasswordWrapper}>
-                                        <input type={viewPassword ? 'text' : 'password'} value={useInfo.user.password} className={styles.infoPassword} disabled/>
+                                        <input type={viewPassword ? 'text' : 'password'} value={props.useInfo.user.password} className={styles.infoPassword} disabled/>
                                         <button className={styles.view}
                                                 onClick={() => setViewPassword(!viewPassword)}>
                                             <img src="img/view.svg" alt=""/>
@@ -127,7 +77,7 @@ const Ref = (props) => {
                                 </h4>
                                 <p className={styles.infoContent}>
                                     <p>
-                                        {useInfo.user.myReferalCode}
+                                        {props.useInfo.user.myReferalCode}
                                     </p>
                                 </p>
                             </div>
@@ -138,7 +88,7 @@ const Ref = (props) => {
                                 <p className={styles.infoContent}>
                                     <p>
                                         <strong>
-                                            {useInfo.user.referalsCount}
+                                            {props.useInfo.user.referalsCount}
                                         </strong>
                                     </p>
                                 </p>
@@ -150,14 +100,14 @@ const Ref = (props) => {
                                 <p className={styles.infoContent}>
                                     <p>
                                         <strong>
-                                            {useInfo.user.myReferalUnpaidBalance + ' '}
+                                            {props.useInfo.user.myReferalUnpaidBalance + ' '}
                                             р</strong>
                                     </p>
                                 </p>
                             </div>
                         </div>
                     </div>
-                    {<Referals data={dataRef.message}/>}
+                    {<Referals data={props.dataRef.message}/>}
                 </div>
             )
             : 'Загрузка...'

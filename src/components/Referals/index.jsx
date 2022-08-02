@@ -9,6 +9,12 @@ const Index = ({data}) => {
     const [currentPage, setCurrentPage] = useState(1)
     const [vpsPerPage] = useState(5)
 
+    function timestampToDate(ts) {
+        let d = new Date();
+        d.setTime(ts);
+        return ('0' + d.getDate()).slice(-2) + '.' + ('0' + (d.getMonth() + 1)).slice(-2) + '.' + d.getFullYear();
+    }
+
     const totalVps = data.length
 
     const countPage = totalVps / vpsPerPage
@@ -17,12 +23,6 @@ const Index = ({data}) => {
     const firstCountryIndex = lastCountryIndex - vpsPerPage
     const currentVps = data.slice(firstCountryIndex, lastCountryIndex)
 
-
-    function timestampToDate(ts) {
-        let d = new Date();
-        d.setTime(ts);
-        return ('0' + d.getDate()).slice(-2) + '.' + ('0' + (d.getMonth() + 1)).slice(-2) + '.' + d.getFullYear();
-    }
 
     return (
         <>
@@ -63,19 +63,19 @@ const Index = ({data}) => {
                                 currentVps.map((item) => (
                                     <div className={styles.row}>
                                         <div className={styles.tableCol}>
-                                            {item.email}
+                                            <b>Email</b><span> {item.email} </span>
                                         </div>
                                         <div className={styles.tableCol}>
-                                            {item.amount > 0 ? <span className={styles.pay}>Оплатил</span> : <span className={styles.notpay}>Не оплатил</span>}
+                                            <b>Статус</b><span> {item.amount > 0 ? <span className={styles.pay}>Оплатил</span> : <span className={styles.notpay}>Не оплатил</span>} </span>
                                         </div>
                                         <div className={styles.tableCol}>
-                                            {item.amount}
+                                            <b>Сумма. Руб</b><span> {item.amount} </span>
                                         </div>
                                         <div className={styles.tableCol}>
-                                            {timestampToDate(item.timestamp)}
+                                           <b>Дата</b> <span> {timestampToDate(item.timestamp)} </span>
                                         </div>
                                         <div className={styles.tableCol}>
-                                            {item.comment}
+                                            <b>Комментарии</b> <span> {item.comment} </span>
                                         </div>
                                     </div>
                                 ))

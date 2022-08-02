@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import Server from "./Server";
 import Pagination from "./Pagination";
 
-const ServersList = ({ data, allChecked, myHeaders, refreshDatas, checkVps, setCheckVps }) => {
+const ServersList = ({ data, allChecked, myHeaders, refreshDatas, setContModal, checkVps, setCheckVps, setAllChecked }) => {
     const [currentPage, setCurrentPage] = useState(1)
     const [vpsPerPage] = useState(8)
 
@@ -14,7 +14,6 @@ const ServersList = ({ data, allChecked, myHeaders, refreshDatas, checkVps, setC
     const firstCountryIndex = lastCountryIndex - vpsPerPage
     const currentVps = data.slice(firstCountryIndex, lastCountryIndex)
 
-
     return (
         <>
         <div className="panel_all">
@@ -22,7 +21,7 @@ const ServersList = ({ data, allChecked, myHeaders, refreshDatas, checkVps, setC
                 <div className="accordion">
                     {
                         currentVps.map((item, index) => (
-                            <Server data={item} key={index} checkVps={checkVps} setCheckVps={setCheckVps} myHeaders={myHeaders} refreshDatas={refreshDatas} allChecked={allChecked} index={index} />
+                            <Server data={item} key={index} setContModal={setContModal} setAllChecked={setAllChecked} checkVps={checkVps} setCheckVps={setCheckVps} myHeaders={myHeaders} refreshDatas={refreshDatas} allChecked={allChecked} index={index} />
                         ))
                     }
                 </div>

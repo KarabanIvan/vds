@@ -1638,6 +1638,10 @@ body, html {
 
 	}
 
+.btn_w {
+	cursor: pointer;
+}
+
     @media (max-width: 760px){
 		.i_cont {
 			width: calc(100% - 50px);

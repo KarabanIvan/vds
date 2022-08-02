@@ -360,7 +360,7 @@ const Index = ( props ) => {
                                 RAM
                             </span>
                             <span className={styles.tarifInfo__value}>
-                                6/8 GB
+                                6 GB
                             </span>
                         </div>
                         <div className={styles.tarifInfo__item}>
